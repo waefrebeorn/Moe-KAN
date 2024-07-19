@@ -1,0 +1,8 @@
+model:
+  input_dim: 128
+  num_experts: 4
+
+training:
+  num_epochs: 10
+  batch_size: 32
+  learning_rate: 0.001
