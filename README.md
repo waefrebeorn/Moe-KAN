@@ -12,9 +12,7 @@ Moe-KAN integrates Kolmogorov–Arnold Networks (KANs) into a Mixture of Experts
   - [Inference](#inference)
 - [Examples](#examples)
 - [Diagrams](#diagrams)
-- [Optimization](#optimization)
 - [Expand Features](#expand-features)
-- [Detailed Documentation](#detailed-documentation)
 - [Contributing](#contributing)
 - [Credits](#credits)
 - [License](#license)
@@ -30,7 +28,9 @@ Moe-KAN leverages the power of Kolmogorov–Arnold Networks within a Mixture of 
 
 ## Structure
 - **src/moe_kan.py**: Contains the MoE implementation with KAN experts.
+- **src/adaptive_gate.py**: Contains the implementation of the adaptive gate.
 - **src/efficient_kan/kan.py**: Contains the efficient KAN implementation.
+- **src/st-moe-pytorch/**: Contains the implementation of st-moe-pytorch.
 
 ## Installation
 To install the required packages, run:
@@ -49,7 +49,7 @@ This will start the training process based on the configurations specified in `t
 ### Inference
 To run inference, use:
 ```bash
-python inference.py --model_path path/to/model --input_path path/to/input
+python inference.py --config configs/inference_config.yaml --model_path path/to/model --input_path path/to/input
 ```
 This will generate predictions using the trained model.
 
@@ -74,7 +74,7 @@ input_data = torch.randn(32, input_dim)  # batch size of 32
 # Forward pass
 output_data = moe_model(input_data)
 
-print(output_data.shape)  # Should be [32, input_dim]
+print(output_data.shape)  # Should be [32, output_dim]
 ```
 
 ## Diagrams
@@ -134,103 +134,13 @@ print(output_data.shape)  # Should be [32, input_dim]
 +--------------------+
 ```
 
-## Optimization
-Profile the code using tools like `cProfile` to identify bottlenecks. Optimize data structures and algorithms for performance improvements.
-
-### Example: Profiling Code with cProfile
-```python
-import cProfile
-import pstats
-import io
-
-def profile_code():
-    pr = cProfile.Profile()
-    pr.enable()
-    
-    # Your code to profile
-    main()
-    
-    pr.disable()
-    s = io.StringIO()
-    sortby = pstats.SortKey.CUMULATIVE
-    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-    ps.print_stats()
-    print(s.getvalue())
-
-def main():
-    # Place the main code logic here
-    pass
-
-if __name__ == '__main__':
-    profile_code()
-```
-
 ## Expand Features
-Implement additional functionalities like dynamic routing or adaptive gating mechanisms.
-
-### Adaptive Gating Mechanism
-```python
-import torch.nn as nn
-import torch
-
-class AdaptiveGate(nn.Module):
-    def __init__(self, input_dim, num_experts):
-        super(AdaptiveGate, self).__init__()
-        self.fc = nn.Linear(input_dim, num_experts)
-    
-    def forward(self, x):
-        gate_weights = torch.softmax(self.fc(x), dim=1)
-        return gate_weights
-```
-
-## Detailed Documentation
-Expand the documentation to include detailed explanations of key components, their roles, and interactions. Use docstrings for classes and methods to provide inline documentation.
-
-### Example: Adding Docstrings
-```python
-class MoeKAN(nn.Module):
-    """
-    Mixture of Experts with Kolmogorov–Arnold Networks (KANs)
-    
-    Args:
-        experts (list): List of expert networks.
-        gate (nn.Module): Gating network.
-    """
-    def __init__(self, experts, gate):
-        super(MoeKAN, self).__init__()
-        self.experts = nn.ModuleList(experts)
-        self.gate = gate
-    
-    def forward(self, x):
-        """
-        Forward pass through the MoE-KAN model.
-        
-        Args:
-            x (Tensor): Input tensor.
-        
-        Returns:
-            Tensor: Output tensor after passing through experts and gating network.
-        """
-        gate_weights = self.gate(x)
-        outputs = torch.stack([expert(x) for expert in self.experts], dim=1)
-        output = torch.sum(gate_weights.unsqueeze(2) * outputs, dim=1)
-        return output
-```
-
-### Detailed Documentation
-```python
-class MoeKAN(nn.Module):
-    """
-    Mixture of Experts with Kolmogorov–Arnold Networks (KANs)
-    
-    The MoeKAN class integrates multiple experts and a gating mechanism to dynamically select the best expert for each input. This results in a more efficient and accurate model.
-    
-    Args:
-        experts (list): List of expert networks.
-        gate (nn.Module): Gating network that determines the weighting of each expert.
-    """
-    # Rest of the class definition with added docstrings
-```
+Implement additional functionalities like:
+- **Dynamic Routing**: Implement a more sophisticated routing mechanism to select the most appropriate expert.
+- **Advanced Logging**: Integrate advanced logging for better monitoring and debugging.
+- **Visualization Tools**: Add visualization tools to better understand model performance and decision-making processes.
+- **Hyperparameter Optimization**: Implement tools like Optuna for automated hyperparameter tuning.
+- **Real-time Inference**: Enable real-time inference capabilities for live data processing.
 
 ## Contributing
 Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -242,5 +152,4 @@ Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) fo
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
+```
