@@ -1,0 +1,6 @@
+model:
+  input_dim: 128
+  num_experts: 4
+
+inference:
+  batch_size: 32
